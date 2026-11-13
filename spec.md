@@ -1,18 +1,28 @@
-# Bài nộp LAB5 — [Track] · Nhóm [tên]
-**Lớp:** L3B · **Bàn / zone:** ____ · **Track:** ____
+# Bài nộp LAB5 — T1 Y tế · Nhóm [điền tên nhóm]
+
+**Lớp:** [L3A/L3B] · **Bàn / zone:** [điền] · **Track:** T1 — Y tế
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
+| Khương Hoàng Nguyên | 2A202603987 | [Điền việc thực tế] |
+| [Thành viên 2] | [Mã học viên] | [Điền việc thực tế] |
+| [Thành viên 3] | [Mã học viên] | [Điền việc thực tế] |
+
+> Phạm vi bản này: chặng 1–3. Tình huống và lời thoại là dữ liệu dựng cho bài thiết kế, không phải tư vấn y tế hay mô tả một hệ thống đang chạy. Phần nhóm, mã học viên và việc thực tế cần được nhóm điền.
 
 ## §1. Lát cắt & phạm vi
-| Sản phẩm | Một người dùng | Một việc | Một quyết định của AI | Một kết quả |
-|---|---|---|---|---|
-| kênh chat Hỏi dược sĩ của Pharmacity | khách | nhắn hỏi "tôi (hoặc người nhà) bị X, có thuốc gì không" | tự trả lời và gợi ý sản phẩm, hỏi thêm câu sàng lọc, hay chuyển dược sĩ, khuyên đi khám ngay | người dùng thuốc không nhận sai sản phẩm và ca nguy hiểm không nằm trong hàng chờ |
 
-- 3 việc tính năng KHÔNG làm:
+**Lát cắt của track:** Trong **kênh chat Hỏi dược sĩ của Pharmacity**, khi **khách** đang nhắn hỏi “tôi (hoặc người nhà) bị X, có thuốc gì không”, **AI tự trả lời và gợi ý sản phẩm, hỏi thêm câu sàng lọc, hay chuyển dược sĩ, khuyên đi khám ngay**, để người dùng thuốc không nhận sai sản phẩm và ca nguy hiểm không nằm trong hàng chờ. Nguồn: [`tracks/t1-healthcare.md`](tracks/t1-healthcare.md), mục “Lát cắt”.
+
+**Quyết định sản phẩm:** Kênh hiện có AI trả lời thông tin giá, tồn kho, khuyến mãi và chuyển câu chuyên môn cho dược sĩ. Lát cắt này thêm khả năng AI chọn *đường đi* cho câu hỏi về triệu chứng. Người nhắn có thể hỏi thay trẻ nhỏ hoặc người nhà; người chịu hậu quả là người dùng thuốc. Nếu gợi ý nhầm và thuốc đã được dùng, không thể thu hồi tác động; chuyển thừa chỉ tốn thời gian. Vì vậy, khi chưa biết rõ người dùng thuốc hoặc thấy dấu hiệu nguy hiểm, giao diện phải dừng đường gợi ý sản phẩm trước khi hiện nút đặt. Đây là suy luận từ mục “Bối cảnh”, bảng tool và “Rubric riêng” của track.
+
+**Ba việc tính năng không làm:**
+
+1. **Không bán hoặc gợi ý thuốc thay thế cho thuốc kê đơn qua chat AI.** `ban_thuoc_ke_don` không đảo được; xác nhận của khách không thay thế đánh giá chuyên môn.
+2. **Không tự đưa liều dùng hay khẳng định thuốc an toàn cho trẻ nhỏ, người mang thai hoặc người có bệnh nền.** Track không cung cấp dữ liệu lâm sàng, và gợi ý sai có thể gây hại sau khi dùng; chuyển dược sĩ để đánh giá.
+3. **Không tự lưu thông tin sức khoẻ vào hồ sơ khách.** `luu_ghi_chu_suc_khoe` có thể xoá nhưng rủi ro lộ đã phát sinh; chỉ xem xét sau một lựa chọn đồng ý riêng của khách ở chặng thiết kế mức tự chủ.
+
+Giới hạn dữ liệu: track chỉ cấp mô tả tool và tin mồi, không cấp hồ sơ thuốc, chống chỉ định, toa hay tồn kho cho một cửa hàng cụ thể. Do đó mọi khẳng định về sản phẩm phù hợp, mức tồn hoặc tính an toàn đều thiếu căn cứ trong bài này.
 
 ## §2. Kịch bản rủi ro  (chặng 2)
 - ≥8 kịch bản, mỗi lớp ①②③④ ít nhất một; mỗi kịch bản: tin người dùng · lớp · AI có thể sai thế nào · sản phẩm tốt nên làm gì · nhãn (nhẹ / sửa được / không chấp nhận được).
