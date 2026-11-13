@@ -1,11 +1,11 @@
-# Bài nộp LAB5 — T1 Y tế · Nhóm [điền tên nhóm]
+# Bài nộp LAB5 — T1 Y tế · Nhóm ViSuKhoe
 
-**Lớp:** [L3A/L3B] · **Bàn / zone:** [điền] · **Track:** T1 — Y tế
+**Lớp:** L3B · **Bàn / zone:** [điền] · **Track:** T1 — Y tế
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
 | Khương Hoàng Nguyên | 2A202603987 | [Điền việc thực tế] |
-| [Thành viên 2] | [Mã học viên] | [Điền việc thực tế] |
+| Đoàn Sỹ Hưng | 2A202603990| [Điền việc thực tế] |
 | [Thành viên 3] | [Mã học viên] | [Điền việc thực tế] |
 
 > Phạm vi bản này: chặng 1–3. Tình huống và lời thoại là dữ liệu dựng cho bài thiết kế, không phải tư vấn y tế hay mô tả một hệ thống đang chạy. Phần nhóm, mã học viên và việc thực tế cần được nhóm điền.
