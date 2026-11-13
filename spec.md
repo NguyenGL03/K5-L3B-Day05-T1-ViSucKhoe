@@ -6,7 +6,7 @@
 |---|---|---|
 | Khương Hoàng Nguyên | 2A202603987 | [Điền việc thực tế] |
 | Đoàn Sỹ Hưng | 2A202603990| [Điền việc thực tế] |
-| [Thành viên 3] | [Mã học viên] | [Điền việc thực tế] |
+| Cao Thanh Tùng | 2A202603982 | Đóng góp kịch bản chặng 2. Thảo luận đề xuất chọn và xây dựng kịch bản đắt nhất |
 
 > Phạm vi bản này: chặng 1–3. Tình huống và lời thoại là dữ liệu dựng cho bài thiết kế, không phải tư vấn y tế hay mô tả một hệ thống đang chạy. Phần nhóm, mã học viên và việc thực tế cần được nhóm điền.
 
