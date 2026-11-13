@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Hỏi dược sĩ · Prototype T1</title>
-<meta name="description" content="Prototype LAB5 · T1 Y tế: trợ lý AI trả lời đầu tiên ở kênh chat Hỏi dược sĩ chọn đường đi cho câu hỏi về triệu chứng. Dữ liệu dựng, không gọi AI thật.">
+<meta name="description" content="Prototype LAB5 · T1 Y tế: trợ lý AI chọn đường đi cho câu hỏi về triệu chứng. Dữ liệu dựng; có chế độ CKey API khi chạy server nội bộ.">
 <meta name="theme-color" content="#0B7A70">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -305,7 +305,7 @@ ul.log time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5p
 </head>
 <body>
 <a class="skip" href="#chat">Bỏ qua tới khung chat</a>
-<!-- LAB5 · T1 Y tế · prototype chặng 5. Dữ liệu dựng, một file HTML, không gọi AI thật, không gửi dữ liệu đi đâu. -->
+<!-- LAB5 · T1 Y tế · prototype chặng 5. Chỉ dùng dữ liệu dựng. Mở trực tiếp: mô phỏng; chạy server nội bộ: có thể gọi CKey API. -->
 <header class="top">
   <div class="wrap">
     <div class="top-row">
@@ -364,6 +364,12 @@ ul.log time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5p
 
   <!-- Bảng thiết kế -->
   <aside class="rail" data-view="rail" aria-label="Ghi chú thiết kế">
+    <div class="panel">
+      <h2>Phân loại bằng AI thật · CKey</h2>
+      <p class="foot" id="liveStatus">Đang kiểm tra kết nối máy chủ…</p>
+      <p class="foot" id="liveEvidence"></p>
+      <p class="foot">AI chỉ được nâng mức cảnh báo hoặc chuyển người. Luật chặn thuốc và kê đơn vẫn quyết định cuối cùng. Chỉ nhập dữ liệu dựng.</p>
+    </div>
     <div class="panel">
       <h2>Mức tự chủ · 5 tool, trạng thái ở ca này</h2>
       <div class="tools" id="tools"></div>
@@ -538,21 +544,50 @@ const goPhrase=c=>c.subjectKind==='self'?'đi khám':`đưa ${c.who} đi khám`;
 
 /* ============ trạng thái ============ */
 let S,VIEW='phone',typingTimer=null;
+const LIVE_LOCAL=location.protocol==='http:'&&['127.0.0.1','localhost'].includes(location.hostname);
+if(LIVE_LOCAL)fetch('/api/status').then(r=>r.json()).then(x=>{if(S){S.live={status:x.live?'Sẵn sàng gọi '+x.model:'Server chưa có API key; dùng luật mô phỏng.',evidence:''};renderRail()}}).catch(()=>{});
 function fresh(preset){
   clearTimeout(typingTimer);
-  S={preset,msgs:[],ticket:null,ts:baseTools(),route:null,rendered:0,typing:false};
+  S={preset,msgs:[],ticket:null,ts:baseTools(),route:null,rendered:0,typing:false,live:{status:LIVE_LOCAL?'Đang kiểm tra AI thật…':'Mở qua start-live.ps1 để gọi AI thật.',evidence:''}};
   T0=Date.now();SKEW=0;
 }
 function baseTools(){return {goi_y_san_pham:['Chưa chạy','idle'],chuyen_duoc_si:['Chưa chạy','idle'],khuyen_di_kham:['Chưa chạy','idle'],luu_ghi_chu_suc_khoe:['Chưa chạy','idle'],ban_thuoc_ke_don:['Không có nút bán','no']};}
 const lastIdx=kind=>{for(let i=S.msgs.length-1;i>=0;i--)if(S.msgs[i].kind===kind)return i;return -1};
 
 /* ============ gửi tin + phản hồi ============ */
-function send(text,preset){
+async function liveTriage(text,c,session){
+  if(!LIVE_LOCAL)return c;
+  session.live={status:'Đang gọi CKey API để phân loại…',evidence:''};renderRail();
+  try{
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),9000);
+    let response;
+    try{response=await fetch('/api/triage',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text}),signal:controller.signal})}finally{clearTimeout(timer)}
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||'Không gọi được AI.');
+    if(S!==session)return c;
+    const local=computeRoute(c);
+    let action='giữ luật an toàn của prototype';
+    if(data.route==='emergency'&&data.evidence&&!has(c,'danger')){c.facts.push({label:data.evidence,tag:'danger',subj:false});action='nâng lên cảnh báo khẩn'}
+    else if(data.route==='transfer'&&data.evidence&&/(?:^|[\s,.!?])(bầu|mang thai|bé|trẻ|cao tuổi|người già|kháng sinh|kê đơn|bệnh nền|đang dùng thuốc|đang uống thuốc)(?:$|[\s,.!?])/i.test(data.evidence)&&!['emergency','rx','persistent','save-other','transfer'].includes(local)){c.force='transfer';action='nâng lên chuyển dược sĩ'}
+    session.live={status:`AI thật (${data.model}): ${data.route} · ${action}`,evidence:data.evidence?'Căn cứ nguyên văn: “'+data.evidence+'”':'AI không nêu thêm căn cứ.'};
+    renderRail();
+  }catch(error){if(S===session){session.live={status:'AI thật lỗi; dùng luật mô phỏng.',evidence:error.message};renderRail()}}
+  return c;
+}
+async function send(text,preset){
   text=text.trim();if(!text||S.typing)return;
   S.msgs.push({who:'me',text});
   $('#msg').value='';
   S.typing=true;render();
-  typingTimer=setTimeout(()=>{S.typing=false;respond(analyze(text,preset));},900);
+  const session=S,c=analyze(text,preset),route=computeRoute(c);
+  if(route==='emergency'||route==='rx'){
+    typingTimer=setTimeout(()=>{if(S===session){S.typing=false;respond(c)}},300);
+    void liveTriage(text,c,session);
+    return;
+  }
+  if(LIVE_LOCAL)await liveTriage(text,c,session);
+  else await new Promise(resolve=>{typingTimer=setTimeout(resolve,900)});
+  if(S===session){S.typing=false;respond(c)}
 }
 function priorityOf(r,c){return r==='emergency'?'khẩn':(c.subjectKind==='child'||c.hurry)?'ưu tiên':'thường';}
 function respond(c,opt={}){
@@ -819,6 +854,8 @@ function qTitle(t){const c=t.c;const s=c.facts.filter(f=>!f.subj&&f.tag!=='rx').
 
 /* ============ render: rail ============ */
 function renderRail(){
+  $('#liveStatus').textContent=S.live.status;
+  $('#liveEvidence').textContent=S.live.evidence;
   $('#tools').innerHTML=TOOLDEF.map(([k,lv,cl,why])=>{const [st,sc]=S.ts[k];return `<div class="tool ${sc}"><code>${k}</code><span class="lv ${cl}">${lv}</span><span class="now">${escH(st)}</span><span class="why-t">${escH(why)}</span></div>`}).join('');
   const r=S.route;const t=S.ticket;
   const A={
@@ -950,7 +987,8 @@ setInterval(tick,1000);
 /* Mở thẳng một ca: index.html#S8 (tự gửi tin của ca đó), index.html#S4-accept (dược sĩ nhận ca) */
 (function boot(){
   const h=decodeURIComponent(location.hash.slice(1));const [id,step]=h.split('-');
-  if(PRESETS.some(p=>p.id===id)){loadPreset(id);send($('#msg').value,id);
+  if(h==='ai-live-test'){fresh('odd7');$('#msg').value=ODD[7][1];render();send($('#msg').value,null);}
+  else if(PRESETS.some(p=>p.id===id)){loadPreset(id);send($('#msg').value,id);
     if(step)setTimeout(()=>{if(step==='accept'&&S.ticket)ACT.accept();if(step==='late'&&S.ticket)ACT.ffwd();if(step==='edit'){const i=lastIdx('triage');ACT.edit({dataset:{i:String(i)}})}},1000);}
   else loadPreset('S4');
 })();
