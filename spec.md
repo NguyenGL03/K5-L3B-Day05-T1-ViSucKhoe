@@ -1,12 +1,12 @@
-# Bài nộp LAB5 — T1 Y tế · Nhóm [điền tên nhóm]
+# Bài nộp LAB5 — T1 Y tế · Nhóm Vì sức khỏe
 
-**Lớp:** [L3A/L3B] · **Bàn / zone:** [điền] · **Track:** T1 — Y tế
+**Lớp:** L3B · **Bàn / zone:** [điền] · **Track:** T1 — Y tế
 
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Khương Hoàng Nguyên | 2A202603987 | [Điền việc thực tế] |
-| [Thành viên 2] | [Mã học viên] | [Điền việc thực tế] |
-| [Thành viên 3] | [Mã học viên] | [Điền việc thực tế] |
+| Khương Hoàng Nguyên | 2A202603987 | Viết §1 (lát cắt, quyết định sản phẩm, 3 việc không làm); viết kịch bản rủi ro S5, S6, S7 và bản đầu của ca tồn kho (nay là S1) ở §2; bảng "Bốn đường đi" ở §3; viết §5–§7 (prototype, tiêu chí Pass/Fail, demo ca lạ); bonus: tích hợp CKey AI thật (`server.mjs`, `start-live.ps1`, phân loại trong `index.html`), chụp ảnh minh chứng, viết `README.md` |
+| Đoàn Sỹ Hưng | 2A202603990 | Viết kịch bản S1–S4 và S8 ở §2, chọn 2 kịch bản đắt nhất (S4, S8) và lý do loại các ca suýt được chọn; viết §3 cho S4 và S8 (lời AI, màn hình, người được báo, HAX/PAIR); viết §4 mức tự chủ cho 5 tool; dựng `prototype/index.html` |
+| Cao Thanh Tùng | 2A202603982 | Tạo template `spec.md` ban đầu (khung §1–§7, bảng lát cắt §1); viết kịch bản rủi ro S9–S12 ở §2 (đau dạ dày kéo dài, khách gắt khi bị hỏi, kháng sinh mất đơn, đau ngực vã mồ hôi) |
 
 ## §1. Lát cắt & phạm vi
 
